@@ -1,7 +1,7 @@
 #' partially match
 #' 
 #' @export
-#' @param x
+#' @param x input, a list
 #' @examples
 #' including(list("foo"))
 #' including(list(foo = "bar"))

@@ -6,6 +6,9 @@
 \usage{
 including(x)
 }
+\arguments{
+\item{x}{input, a list}
+}
 \description{
 partially match
 }
