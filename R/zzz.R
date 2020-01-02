@@ -171,3 +171,15 @@ last <- function(x) {
   if (length(x) == 0) return(list())
   x[[length(x)]]
 }
+
+vcr_loaded <- function() {
+  "package:vcr" %in% search()
+}
+
+# test if a cassette is inserted without assuming vcr is installed
+vcr_cassette_inserted <- function() {
+  if (vcr_loaded()) {
+    if (length(vcr::current_cassette()) > 0) return(TRUE)
+  }
+  return(FALSE)  
+}
