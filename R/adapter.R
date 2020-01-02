@@ -93,34 +93,20 @@ Adapter <- R6::R6Class("Adapter",
 
         # generate response
         # VCR: recordable/ignored
+        if (vcr_cassette_inserted()) {
+          resp <- private$request_handler(req)$handle()
 
-        if ("package:vcr" %in% search()) {
-          cas <- vcr::current_cassette()
-          if (length(cas$previously_recorded_interactions()) == 0) {
-            # using vcr, but no recorded interactions to the cassette yet
-            # use RequestHandler - gets current cassette & record interaction
-            resp <- private$request_handler(req)$handle()
+          # if written to disk, see if we should modify file path
+          if (self$client == "crul" && is.character(resp$content)) {
+            resp <- private$update_vcr_disk_path(resp)
           }
-        
-        # no vcr
+
+        # vcr is not loaded, skip
         } else {
           resp <- private$build_response(req, resp)
           # add to_return() elements if given
           resp <- private$add_response_sequences(ss, resp)
         }
-
-        # if vcr loaded: record http interaction into vcr namespace
-        # VCR: recordable/stubbed_by_vcr ??
-        if ("package:vcr" %in% search()) {
-          # get current cassette
-          cas <- vcr::current_cassette()
-          resp <- private$request_handler(req)$handle()
-          
-          # if written to disk, see if we should modify file path
-          if (self$client == "crul" && is.character(resp$content)) {
-            resp <- private$update_vcr_disk_path(resp)
-          }
-        } # vcr is not loaded, skip
 
       # request is not in cache but connections are allowed
       } else if (webmockr_net_connect_allowed(uri = private$pluck_url(req))) {
